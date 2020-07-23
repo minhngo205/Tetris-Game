@@ -36,12 +36,20 @@ public class Board extends JPanel implements Runnable {
     Thread fallingThread;
     final Scoreboard scoreboard = new Scoreboard();
     static final Random rand = new Random();
+    final static Color bgColor = new Color(0xDDEEFF);
+    final static Dimension dim = new Dimension(640, 700);
  
     public Board() {
+        setPreferredSize(dim);
+        setBackground(bgColor);
+        setFocusable(true);
+ 
+        initGrid();
+        selectShape();
  
         addKeyListener(new KeyAdapter() {
             boolean fastDown;
- 
+
             @Override
             public void keyPressed(KeyEvent e) {
  
@@ -142,7 +150,17 @@ public class Board extends JPanel implements Runnable {
             }
         }
     }
- 
+
+    void drawSquare(Graphics2D g, int colorIndex, int r, int c) {
+        g.setColor(colors[colorIndex]);
+        g.fillRect(leftMargin + c * blockSize, topMargin + r * blockSize,
+                blockSize, blockSize);
+
+        g.setStroke(smallStroke);
+        g.setColor(squareBorder);
+        g.drawRect(leftMargin + c * blockSize, topMargin + r * blockSize,
+                blockSize, blockSize);
+    }
     
 
  

@@ -36,6 +36,7 @@ public class Board extends JPanel implements Runnable {
     final static int nCols = 12;
     final int[][] grid = new int[nRows][nCols];
  
+    private boolean isGameStart = false;
     Thread fallingThread;
     final Scoreboard scoreboard = new Scoreboard();
     static final Random rand = new Random();
@@ -75,7 +76,7 @@ public class Board extends JPanel implements Runnable {
                         if (canRotate(fallingShape))
                             rotate(fallingShape);
                         break;
- 
+
                     case KeyEvent.VK_LEFT:
                         if (canMove(fallingShape, Dir.left))
                             move(Dir.left);
@@ -122,6 +123,7 @@ public class Board extends JPanel implements Runnable {
         selectShape();
         scoreboard.reset();
         (fallingThread = new Thread(this)).start();
+        isGameStart = true;
     }
  
     void stop() {
@@ -178,6 +180,21 @@ public class Board extends JPanel implements Runnable {
         g.drawString("click to start", clickX, clickY);
     }
 
+    void drawEndScreen(Graphics2D g) {
+        g.setFont(mainFont);
+ 
+        g.setColor(titlebgColor);
+        g.fill(titleRect);
+        g.fill(clickRect);
+ 
+        g.setColor(textColor);
+        g.drawString("Game", titleX, titleY-25);
+        g.drawString("Over", titleX, titleY+25);
+
+        g.setFont(smallFont);
+        g.drawString("click to restart", clickX, clickY);
+    }
+
     void drawSquare(Graphics2D g, int colorIndex, int r, int c) {
         g.setColor(colors[colorIndex]);
         g.fillRect(leftMargin + c * blockSize, topMargin + r * blockSize,
@@ -222,10 +239,11 @@ public class Board extends JPanel implements Runnable {
                 RenderingHints.VALUE_ANTIALIAS_ON);
  
         drawUI(g);
- 
-        if (scoreboard.isGameOver()) {
-            drawStartScreen(g);
-        } else {
+
+        if(scoreboard.isGameOver()){
+            if (isGameStart) drawEndScreen(g);
+            else drawStartScreen(g);
+        } else{
             drawFallingShape(g);
         }
     }

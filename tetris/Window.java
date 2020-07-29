@@ -8,6 +8,7 @@ public class Window {
             JFrame f = new JFrame();
             f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             f.setTitle("Tetris");
+            f.setIconImage(new ImageIcon("tetris.png").getImage());
             f.setResizable(false);
             f.add(new Board(), BorderLayout.CENTER);
             f.pack();

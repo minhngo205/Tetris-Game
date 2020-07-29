@@ -8,9 +8,9 @@ final class Config {
 
     final static Font mainFont = new Font("Monospaced", Font.BOLD, 48);
     final static Font smallFont = mainFont.deriveFont(Font.BOLD, 18);
- 
+
     final static Dimension dim = new Dimension(640, 700);
- 
+
     final static Rectangle gridRect = new Rectangle(46, 47, 308, 577);
     final static Rectangle previewRect = new Rectangle(387, 47, 200, 200);
     final static Rectangle titleRect = new Rectangle(100, 85, 252, 100);

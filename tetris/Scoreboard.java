@@ -33,7 +33,6 @@ class Scoreboard {
     }
  
     int getSpeed() {
- 
         switch (level) {
             case 0:
                 return 700;
@@ -59,7 +58,7 @@ class Scoreboard {
                 return 100;
         }
     }
- 
+
     void addScore(int sc) {
         score += sc;
     }

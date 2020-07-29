@@ -37,6 +37,7 @@ public class Board extends JPanel implements Runnable {
     final int[][] grid = new int[nRows][nCols];
  
     private boolean isGameStart = false;
+    private boolean isPaused = false;
     Thread fallingThread;
     final Scoreboard scoreboard = new Scoreboard();
     static final Random rand = new Random();
@@ -71,7 +72,10 @@ public class Board extends JPanel implements Runnable {
                     return;
  
                 switch (e.getKeyCode()) {
- 
+                    case KeyEvent.VK_P:
+                        isPaused = true;
+                        break;
+
                     case KeyEvent.VK_UP:
                         if (canRotate(fallingShape))
                             rotate(fallingShape);
@@ -106,7 +110,7 @@ public class Board extends JPanel implements Runnable {
             }
         });
     }
- 
+
     void selectShape() {
         fallingShapeRow = 1;
         fallingShapeCol = 5;
@@ -154,7 +158,7 @@ public class Board extends JPanel implements Runnable {
             } catch (InterruptedException e) {
                 return;
             }
- 
+            
             if (!scoreboard.isGameOver()) {
                 if (canMove(fallingShape, Dir.down)) {
                     move(Dir.down);
@@ -195,6 +199,21 @@ public class Board extends JPanel implements Runnable {
         g.drawString("click to restart", clickX, clickY);
     }
 
+    void drawPauseScreen (Graphics2D g){
+        g.setFont(mainFont);
+ 
+        g.setColor(titlebgColor);
+        g.fill(titleRect);
+        g.fill(clickRect);
+ 
+        g.setColor(textColor);
+        g.drawString("Game", titleX, titleY-25);
+        g.drawString("Paused", titleX, titleY+25);
+
+        g.setFont(smallFont);
+        g.drawString("P to countinue", clickX, clickY);
+    }
+
     void drawSquare(Graphics2D g, int colorIndex, int r, int c) {
         g.setColor(colors[colorIndex]);
         g.fillRect(leftMargin + c * blockSize, topMargin + r * blockSize,
@@ -223,6 +242,33 @@ public class Board extends JPanel implements Runnable {
         g.setStroke(largeStroke);
         g.setColor(gridBorderColor);
         g.draw(gridRect);
+        g.draw(previewRect);
+
+        // scoreboard
+        int x = scoreX;
+        int y = scoreY;
+        g.setColor(textColor);
+        g.setFont(smallFont);
+        g.drawString(format("high score  %6d", scoreboard.getTopscore()), x, y);
+        g.drawString(format("level       %6d", scoreboard.getLevel()), x, y + 30);
+        g.drawString(format("lines       %6d", scoreboard.getLines()), x, y + 60);
+        g.drawString(format("score       %6d", scoreboard.getScore()), x, y + 90);
+    
+        // preview
+        int minX = 5, minY = 5, maxX = 0, maxY = 0;
+        for (int[] p : nextShape.pos) {
+            minX = min(minX, p[0]);
+            minY = min(minY, p[1]);
+            maxX = max(maxX, p[0]);
+            maxY = max(maxY, p[1]);
+        }
+        double cx = previewCenterX - ((minX + maxX + 1) / 2.0 * blockSize);
+        double cy = previewCenterY - ((minY + maxY + 1) / 2.0 * blockSize);
+ 
+        g.translate(cx, cy);
+        for (int[] p : nextShape.shape)
+            drawSquare(g, nextShape.ordinal(), p[1], p[0]);
+        g.translate(-cx, -cy);
     }
 
     void drawFallingShape(Graphics2D g) {
@@ -244,7 +290,11 @@ public class Board extends JPanel implements Runnable {
             if (isGameStart) drawEndScreen(g);
             else drawStartScreen(g);
         } else{
-            drawFallingShape(g);
+            /* if(isPaused){
+                drawPauseScreen(g);
+            } else { */
+                drawFallingShape(g);
+            //}
         }
     }
 
